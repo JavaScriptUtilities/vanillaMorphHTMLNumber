@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang="en-EN">
+    <head>
+    <meta charset="UTF-8" />
+    <title>Vanilla Morph HTML Number</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=0.3.0" />
+    <script src="js/script.js?v=0.3.0"></script>
+    <script src="js/morphhtmlnumber.js?v=0.3.0"></script>
+    </head>
+    <body>
+        <h1>Vanilla Morph HTML Number</h1>
+        <p>
+            This script adds a counter animation to an element.<br />
+            No library dependency ✌️
+        </p>
+        <p>To use it, just load the JS file and follow our examples.</p>
+        <pre class="display-style">&lt;script src=&quot;js/morphhtmlnumber.min.js?v=0.3.0&quot;&gt;&lt;/script&gt;</pre>
+
+        <h2>Basic example</h2>
+        <p>Loading <span id="example-1">100</span>%</p>
+        <button id="reload-example-1">Relaunch</button>
+        <hr />
+        <script class="display-style">new morphHTMLNumber(document.getElementById('example-1'));</script>
+        <pre class="display-style">&lt;span id=&quot;example-1&quot;&gt;<strong>100</strong>&lt;/span&gt;</pre>
+        <script>document.getElementById('reload-example-1').addEventListener('click', function(e){
+            new morphHTMLNumber(document.getElementById('example-1'));
+        }, 1);</script>
+
+        <h2>Example using attributes</h2>
+        <p>Loading <span id="example-2" data-finalvalue="142.42" data-morphtime="3000" data-morphisfloat="1"></span>%</p>
+        <button id="reload-example-2">Relaunch</button>
+        <hr />
+        <script class="display-style">new morphHTMLNumber(document.getElementById('example-2'));</script>
+        <pre class="display-style">&lt;span id=&quot;example-2&quot;
+    <strong>data-finalvalue</strong>=&quot;142.42&quot;
+    <strong>data-morphtime</strong>=&quot;3000&quot;
+    <strong>data-morphisfloat</strong>=&quot;1&quot;&gt;0&lt;/span&gt;</pre>
+        <script>document.getElementById('reload-example-2').addEventListener('click', function(e){
+            new morphHTMLNumber(document.getElementById('example-2'));
+        }, 1);</script>
+
+        <h2>Example using arguments</h2>
+        <p>Loading <span id="example-3"></span>%</p>
+        <button id="reload-example-3">Relaunch</button>
+        <hr />
+        <script class="display-style">new morphHTMLNumber({
+    el: document.getElementById('example-3'),
+    finalValue: 42.42,
+    time: 1000
+});</script>
+        <pre class="display-style">&lt;span id=&quot;example-3&quot;&gt;<strong></strong>&lt;/span&gt;</pre>
+        <script>document.getElementById('reload-example-3').addEventListener('click', function(e){
+            new morphHTMLNumber({
+                el: document.getElementById('example-3'),
+                finalValue: 42.42,
+                time: 1000
+            });
+        }, 1);</script>
+    </body>
+</html>
