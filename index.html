@@ -3,9 +3,9 @@
     <head>
     <meta charset="UTF-8" />
     <title>Vanilla Morph HTML Number</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=0.3.0" />
-    <script src="js/script.js?v=0.3.0"></script>
-    <script src="js/morphhtmlnumber.js?v=0.3.0"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=0.4.0" />
+    <script src="js/script.js?v=0.4.0"></script>
+    <script src="js/morphhtmlnumber.js?v=0.4.0"></script>
     </head>
     <body>
         <h1>Vanilla Morph HTML Number</h1>
@@ -14,8 +14,9 @@
             No library dependency ✌️
         </p>
         <p>To use it, just load the JS file and follow our examples.</p>
-        <pre class="display-style">&lt;script src=&quot;js/morphhtmlnumber.min.js?v=0.3.0&quot;&gt;&lt;/script&gt;</pre>
+        <pre class="display-style">&lt;script src=&quot;js/morphhtmlnumber.min.js?v=0.4.0&quot;&gt;&lt;/script&gt;</pre>
 
+        <!-- Basic -->
         <h2>Basic example</h2>
         <p>Loading <span id="example-1">100</span>%</p>
         <button id="reload-example-1">Relaunch</button>
@@ -26,6 +27,7 @@
             new morphHTMLNumber(document.getElementById('example-1'));
         }, 1);</script>
 
+        <!-- Attributes -->
         <h2>Example using attributes</h2>
         <p>Loading <span id="example-2" data-finalvalue="142.42" data-morphtime="3000" data-morphisfloat="1"></span>%</p>
         <button id="reload-example-2">Relaunch</button>
@@ -34,11 +36,12 @@
         <pre class="display-style">&lt;span id=&quot;example-2&quot;
     <strong>data-finalvalue</strong>=&quot;142.42&quot;
     <strong>data-morphtime</strong>=&quot;3000&quot;
-    <strong>data-morphisfloat</strong>=&quot;1&quot;&gt;0&lt;/span&gt;</pre>
+    <strong>data-morphisfloat</strong>=&quot;1&quot;&gt;&lt;/span&gt;</pre>
         <script>document.getElementById('reload-example-2').addEventListener('click', function(e){
             new morphHTMLNumber(document.getElementById('example-2'));
         }, 1);</script>
 
+        <!-- Arguments -->
         <h2>Example using arguments</h2>
         <p>Loading <span id="example-3"></span>%</p>
         <button id="reload-example-3">Relaunch</button>
@@ -56,5 +59,31 @@
                 time: 1000
             });
         }, 1);</script>
+
+        <!-- Reverse default -->
+        <h2>Reverse example with the default start value</h2>
+        <p>Loading <span id="example-4" data-morphisreverse="1">12</span>%</p>
+        <button id="reload-example-4">Relaunch</button>
+        <hr />
+        <script class="display-style">new morphHTMLNumber(document.getElementById('example-4'));</script>
+        <pre class="display-style">&lt;span id=&quot;example-4&quot;
+    <strong>data-morphisreverse</strong>=&quot;1&quot;&gt;12&lt;/span&gt;</pre>
+        <script>document.getElementById('reload-example-4').addEventListener('click', function(e){
+            new morphHTMLNumber(document.getElementById('example-4'));
+        }, 1);</script>
+
+        <!-- Reverse start -->
+        <h2>Reverse example with start value</h2>
+        <p>Loading <span id="example-5" data-startvalue="142">12</span>%</p>
+        <button id="reload-example-5">Relaunch</button>
+        <hr />
+        <script class="display-style">new morphHTMLNumber(document.getElementById('example-5'));</script>
+        <pre class="display-style">&lt;span id=&quot;example-5&quot;
+    <strong>data-startvalue</strong>=&quot;142&quot;&gt;12&lt;/span&gt;</pre>
+        <script>document.getElementById('reload-example-5').addEventListener('click', function(e){
+            new morphHTMLNumber(document.getElementById('example-5'));
+        }, 1);</script>
+
+
     </body>
 </html>

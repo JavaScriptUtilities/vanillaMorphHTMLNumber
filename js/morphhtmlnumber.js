@@ -1,6 +1,6 @@
 /*
  * Plugin Name: Morph HTML Number
- * Version: 0.3.0
+ * Version: 0.4.0
  * Plugin URL: https://github.com/Darklg/JavaScriptUtilities
  * JavaScriptUtilities Vanilla-JS may be freely distributed under the MIT license.
  */
@@ -36,11 +36,11 @@ var morphHTMLNumber = function(options) {
     options = this.setOptions(options);
 
     // Get values
-    intervalValue = options.finalValue / (options.time / options.intervalDelay);
-    startValue = 0;
+    startValue = options.startValue;
+    intervalValue = (options.finalValue - options.startValue) / (options.time / options.intervalDelay);
 
     // Set content to 0
-    options.el.innerHTML = 0;
+    options.el.innerHTML = startValue;
 
     // Launch Counter incrementation
     interval = setInterval(function set_frame_value() {
@@ -50,7 +50,6 @@ var morphHTMLNumber = function(options) {
         }
         else {
             options.el.innerHTML = Math.ceil(startValue);
-
         }
     }, options.intervalDelay);
 
@@ -58,7 +57,12 @@ var morphHTMLNumber = function(options) {
         // Stop counter
         clearInterval(interval);
         // Set content to final value
-        options.el.innerHTML = options.finalValue;
+        if (options.isFloat) {
+            options.el.innerHTML = options.finalValue.toFixed(options.nbDecimals);
+        }
+        else {
+            options.el.innerHTML = options.finalValue;
+        }
         // Allow relaunch
         options.el.setAttribute(isMorphingAttribute, 0);
     }, options.time);
@@ -95,6 +99,14 @@ morphHTMLNumber.prototype.setOptions = function(options) {
     }
     options.isFloat = options.isFloat || defaultOptionIsFloat;
 
+    /* Reverse value */
+    var defaultOptionIsReverse = false,
+        defaultOptionIsReverseAttribute = 'data-morphisreverse';
+    if (options.el.getAttribute(defaultOptionIsReverseAttribute)) {
+        defaultOptionIsReverse = !!options.el.getAttribute(defaultOptionIsReverseAttribute);
+    }
+    options.isReverse = options.isReverse || defaultOptionIsReverse;
+
     /* Number of decimals if float */
     var defaultOptionsNbDecimals = 2,
         defaultOptionsNbDecimalsAttribute = 'data-morphnbdecimals';
@@ -114,10 +126,34 @@ morphHTMLNumber.prototype.setOptions = function(options) {
         }
     }
     if (options.isFloat) {
-        options.finalValue = parseFloat(options.finalValue, 10).toFixed(options.nbDecimals);
+        options.finalValue = parseFloat(options.finalValue, 10);
     }
     else {
         options.finalValue = parseInt(options.finalValue, 10);
+    }
+
+    // Final value
+    var startValueAttribute = 'data-startValue';
+    if (!options.startValue) {
+        if (options.el.getAttribute(startValueAttribute)) {
+            options.startValue = options.el.getAttribute(startValueAttribute);
+        }
+        else {
+            if (options.isReverse) {
+                options.startValue = 100;
+            }
+            else {
+                options.startValue = 0;
+            }
+        }
+    }
+    if (options.startValue) {
+        if (options.isFloat) {
+            options.startValue = parseFloat(options.startValue, 10);
+        }
+        else {
+            options.startValue = parseInt(options.startValue, 10);
+        }
     }
 
     return options;
