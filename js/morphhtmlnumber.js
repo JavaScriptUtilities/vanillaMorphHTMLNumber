@@ -1,6 +1,6 @@
 /*
  * Plugin Name: Morph HTML Number
- * Version: 0.4.0
+ * Version: 0.4.1
  * Plugin URL: https://github.com/Darklg/JavaScriptUtilities
  * JavaScriptUtilities Vanilla-JS may be freely distributed under the MIT license.
  */
@@ -125,6 +125,7 @@ morphHTMLNumber.prototype.setOptions = function(options) {
             options.finalValue = options.el.innerHTML;
         }
     }
+    options.finalValue = options.finalValue.toString().replace(',','.');
     if (options.isFloat) {
         options.finalValue = parseFloat(options.finalValue, 10);
     }
@@ -147,6 +148,7 @@ morphHTMLNumber.prototype.setOptions = function(options) {
             }
         }
     }
+    options.startValue = options.startValue.toString().replace(',','.');
     if (options.startValue) {
         if (options.isFloat) {
             options.startValue = parseFloat(options.startValue, 10);
