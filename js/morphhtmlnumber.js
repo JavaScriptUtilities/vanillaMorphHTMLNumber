@@ -1,6 +1,6 @@
 /*
  * Plugin Name: Morph HTML Number
- * Version: 0.4.1
+ * Version: 0.5.0
  * Plugin URL: https://github.com/Darklg/JavaScriptUtilities
  * JavaScriptUtilities Vanilla-JS may be freely distributed under the MIT license.
  */
@@ -39,33 +39,59 @@ var morphHTMLNumber = function(options) {
     startValue = options.startValue;
     intervalValue = (options.finalValue - options.startValue) / (options.time / options.intervalDelay);
 
-    // Set content to 0
-    options.el.innerHTML = startValue;
+    function callback_number() {
+        // Set content to 0
+        options.el.innerHTML = startValue;
 
-    // Launch Counter incrementation
-    interval = setInterval(function set_frame_value() {
-        startValue += intervalValue;
-        if (options.isFloat) {
-            options.el.innerHTML = startValue.toFixed(options.nbDecimals);
-        }
-        else {
-            options.el.innerHTML = Math.ceil(startValue);
-        }
-    }, options.intervalDelay);
+        // Launch Counter incrementation
+        interval = setInterval(function set_frame_value() {
+            startValue += intervalValue;
+            if (options.isFloat) {
+                options.el.innerHTML = startValue.toFixed(options.nbDecimals);
+            }
+            else {
+                options.el.innerHTML = Math.ceil(startValue);
+            }
+        }, options.intervalDelay);
 
-    setTimeout(function set_final_value() {
-        // Stop counter
-        clearInterval(interval);
-        // Set content to final value
-        if (options.isFloat) {
-            options.el.innerHTML = options.finalValue.toFixed(options.nbDecimals);
-        }
-        else {
-            options.el.innerHTML = options.finalValue;
-        }
-        // Allow relaunch
-        options.el.setAttribute(isMorphingAttribute, 0);
-    }, options.time);
+        setTimeout(function set_final_value() {
+            // Stop counter
+            clearInterval(interval);
+            // Set content to final value
+            if (options.isFloat) {
+                options.el.innerHTML = options.finalValue.toFixed(options.nbDecimals);
+            }
+            else {
+                options.el.innerHTML = options.finalValue;
+            }
+            // Allow relaunch
+            options.el.setAttribute(isMorphingAttribute, 0);
+        }, options.time);
+
+    }
+
+    if(options.waitUntilVisible){
+        var wasVisible;
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                // Si l'élément est visible et que callback_number n'a pas été appelée avant
+                if (entry.isIntersecting && !wasVisible) {
+                    callback_number();
+                    wasVisible = true;
+                    observer.unobserve(options.el);
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        });
+        observer.observe(options.el);
+    }
+    else {
+        callback_number();
+    }
+
 };
 
 /* ----------------------------------------------------------
@@ -107,6 +133,14 @@ morphHTMLNumber.prototype.setOptions = function(options) {
     }
     options.isReverse = options.isReverse || defaultOptionIsReverse;
 
+    /* Wait Until visible */
+    var defaultOptionWaitUntilVisible = false,
+        defaultOptionWaitUntilVisibleAttribute = 'data-morphwaituntilvisible';
+    if (options.el.getAttribute(defaultOptionWaitUntilVisibleAttribute)) {
+        defaultOptionWaitUntilVisible = !!options.el.getAttribute(defaultOptionWaitUntilVisibleAttribute);
+    }
+    options.waitUntilVisible = options.waitUntilVisible || defaultOptionWaitUntilVisible;
+
     /* Number of decimals if float */
     var defaultOptionsNbDecimals = 2,
         defaultOptionsNbDecimalsAttribute = 'data-morphnbdecimals';
@@ -125,7 +159,7 @@ morphHTMLNumber.prototype.setOptions = function(options) {
             options.finalValue = options.el.innerHTML;
         }
     }
-    options.finalValue = options.finalValue.toString().replace(',','.');
+    options.finalValue = options.finalValue.toString().replace(',', '.');
     if (options.isFloat) {
         options.finalValue = parseFloat(options.finalValue, 10);
     }
@@ -148,7 +182,7 @@ morphHTMLNumber.prototype.setOptions = function(options) {
             }
         }
     }
-    options.startValue = options.startValue.toString().replace(',','.');
+    options.startValue = options.startValue.toString().replace(',', '.');
     if (options.startValue) {
         if (options.isFloat) {
             options.startValue = parseFloat(options.startValue, 10);
