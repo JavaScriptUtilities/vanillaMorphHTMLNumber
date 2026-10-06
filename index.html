@@ -100,5 +100,19 @@
         }, 1);</script>
 
 
+        <!-- Keep format -->
+        <h2>Keeping format (thousands, decimals, prefix &amp; suffix)</h2>
+        <p><span id="example-7">80 000</span> clients &mdash; <span id="example-8" data-morphkeepformat="1">1,5m€</span></p>
+        <button id="reload-example-7">Relaunch</button>
+        <hr />
+        <script class="display-style">new morphHTMLNumber({el:document.getElementById('example-7'),keepFormat: true});
+new morphHTMLNumber(document.getElementById('example-8'));</script>
+        <pre class="display-style">&lt;span id=&quot;example-8&quot;
+    <strong>data-morphkeepformat</strong>=&quot;1&quot;&gt;1,5m€&lt;/span&gt;</pre>
+        <script>document.getElementById('reload-example-7').addEventListener('click', function(){
+            new morphHTMLNumber({el: document.getElementById('example-7'), keepFormat: true});
+            new morphHTMLNumber(document.getElementById('example-8'));
+        }, 1);</script>
+
     </body>
 </html>

@@ -1,6 +1,6 @@
 /*
  * Plugin Name: Morph HTML Number
- * Version: 0.5.0
+ * Version: 0.6.0
  * Plugin URL: https://github.com/Darklg/JavaScriptUtilities
  * JavaScriptUtilities Vanilla-JS may be freely distributed under the MIT license.
  */
@@ -35,35 +35,42 @@ var morphHTMLNumber = function(options) {
     // Set options
     options = this.setOptions(options);
 
+    // No number found in a formatted value : leave content untouched
+    if (options.keepFormat && !options.format) {
+        options.el.setAttribute(isMorphingAttribute, 0);
+        return;
+    }
+
     // Get values
     startValue = options.startValue;
     intervalValue = (options.finalValue - options.startValue) / (options.time / options.intervalDelay);
 
+    function format_value(value) {
+        var str = options.isFloat ? value.toFixed(options.nbDecimals) : String(Math.ceil(value));
+        if (!options.format) {
+            return str;
+        }
+        var f = options.format,
+            parts = str.replace('-', '').split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, f.thousandSep);
+        return f.prefix + (str.charAt(0) == '-' ? '-' : '') + parts.join(f.decimalSep) + f.suffix;
+    }
+
     function callback_number() {
         // Set content to 0
-        options.el.innerHTML = startValue;
+        options.el.innerHTML = format_value(startValue);
 
         // Launch Counter incrementation
         interval = setInterval(function set_frame_value() {
             startValue += intervalValue;
-            if (options.isFloat) {
-                options.el.innerHTML = startValue.toFixed(options.nbDecimals);
-            }
-            else {
-                options.el.innerHTML = Math.ceil(startValue);
-            }
+            options.el.innerHTML = format_value(startValue);
         }, options.intervalDelay);
 
         setTimeout(function set_final_value() {
             // Stop counter
             clearInterval(interval);
             // Set content to final value
-            if (options.isFloat) {
-                options.el.innerHTML = options.finalValue.toFixed(options.nbDecimals);
-            }
-            else {
-                options.el.innerHTML = options.finalValue;
-            }
+            options.el.innerHTML = format_value(options.finalValue);
             // Allow relaunch
             options.el.setAttribute(isMorphingAttribute, 0);
         }, options.time);
@@ -141,9 +148,18 @@ morphHTMLNumber.prototype.setOptions = function(options) {
     }
     options.waitUntilVisible = options.waitUntilVisible || defaultOptionWaitUntilVisible;
 
+    /* Keep format : prefix, suffix, thousands & decimal separators */
+    var defaultOptionKeepFormat = false,
+        defaultOptionKeepFormatAttribute = 'data-morphkeepformat';
+    if (options.el.getAttribute(defaultOptionKeepFormatAttribute)) {
+        defaultOptionKeepFormat = !!options.el.getAttribute(defaultOptionKeepFormatAttribute);
+    }
+    options.keepFormat = options.keepFormat || defaultOptionKeepFormat;
+
     /* Number of decimals if float */
     var defaultOptionsNbDecimals = 2,
-        defaultOptionsNbDecimalsAttribute = 'data-morphnbdecimals';
+        defaultOptionsNbDecimalsAttribute = 'data-morphnbdecimals',
+        hasNbDecimals = !!(options.nbDecimals || options.el.getAttribute(defaultOptionsNbDecimalsAttribute));
     if (options.el.getAttribute(defaultOptionsNbDecimalsAttribute)) {
         defaultOptionsNbDecimals = options.el.getAttribute(defaultOptionsNbDecimalsAttribute);
     }
@@ -157,6 +173,17 @@ morphHTMLNumber.prototype.setOptions = function(options) {
         }
         else {
             options.finalValue = options.el.innerHTML;
+        }
+    }
+    if (options.keepFormat) {
+        options.format = this.parseFormat(options.finalValue.toString());
+        if (!options.format) {
+            return options;
+        }
+        options.finalValue = options.format.value;
+        if (options.format.nbDecimals) {
+            options.isFloat = true;
+            options.nbDecimals = hasNbDecimals ? options.nbDecimals : options.format.nbDecimals;
         }
     }
     options.finalValue = options.finalValue.toString().replace(',', '.');
@@ -182,6 +209,10 @@ morphHTMLNumber.prototype.setOptions = function(options) {
             }
         }
     }
+    if (options.keepFormat) {
+        var startFormat = this.parseFormat(options.startValue.toString());
+        options.startValue = startFormat ? startFormat.value : 0;
+    }
     options.startValue = options.startValue.toString().replace(',', '.');
     if (options.startValue) {
         if (options.isFloat) {
@@ -193,4 +224,31 @@ morphHTMLNumber.prototype.setOptions = function(options) {
     }
 
     return options;
+};
+
+/* ----------------------------------------------------------
+  Parse format : first number outside HTML tags
+---------------------------------------------------------- */
+
+morphHTMLNumber.prototype.parseFormat = function(str) {
+    'use strict';
+    /* Spaces always group thousands, "." or "," only before exactly 3 digits, else decimal */
+    var numberRegex = /(-?\d+)((?:[ \u00a0\u202f.,]\d{3}(?!\d))*)(?:([.,])(\d+))?/,
+        parts = str.split(/(<[^>]*>)/),
+        match, i;
+    for (i = 0; i < parts.length; i += 2) {
+        match = numberRegex.exec(parts[i]);
+        if (!match) {
+            continue;
+        }
+        return {
+            prefix: parts.slice(0, i).join('') + parts[i].slice(0, match.index),
+            suffix: parts[i].slice(match.index + match[0].length) + parts.slice(i + 1).join(''),
+            value: parseFloat(match[1] + match[2].replace(/\D/g, '') + '.' + (match[4] || '0')),
+            thousandSep: match[2].charAt(0),
+            decimalSep: match[3] || '.',
+            nbDecimals: match[4] ? match[4].length : 0
+        };
+    }
+    return false;
 };
