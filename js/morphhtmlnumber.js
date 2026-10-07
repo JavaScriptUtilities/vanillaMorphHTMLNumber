@@ -1,6 +1,6 @@
 /*
  * Plugin Name: Morph HTML Number
- * Version: 0.6.0
+ * Version: 0.6.1
  * Plugin URL: https://github.com/Darklg/JavaScriptUtilities
  * JavaScriptUtilities Vanilla-JS may be freely distributed under the MIT license.
  */
@@ -57,9 +57,6 @@ var morphHTMLNumber = function(options) {
     }
 
     function callback_number() {
-        // Set content to 0
-        options.el.innerHTML = format_value(startValue);
-
         // Launch Counter incrementation
         interval = setInterval(function set_frame_value() {
             startValue += intervalValue;
@@ -76,6 +73,9 @@ var morphHTMLNumber = function(options) {
         }, options.time);
 
     }
+
+    // Set content to start value, even while waiting to be visible
+    options.el.innerHTML = format_value(startValue);
 
     if(options.waitUntilVisible){
         var wasVisible;
